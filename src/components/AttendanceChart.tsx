@@ -45,7 +45,7 @@ const AttendanceChart = () => {
   return (
     <div className="bg-white rounded-lg h-full p-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-gray-500">Attendance</h1>
+        <h1 className="text-lg font-semibold ">Attendance</h1>
         <Image src={"/moreDark.png"} alt="" width={20} height={20} />
       </div>
       <ResponsiveContainer width="100%" height="90%">

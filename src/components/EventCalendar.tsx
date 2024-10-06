@@ -43,7 +43,7 @@ const EventCalendar = () => {
       />
 
       <div className="flex items-center justify-between my-2">
-        <h1 className="text-lg font-semibold text-gray-500">Events</h1>
+        <h1 className="text-lg font-semibold ">Events</h1>
         <Image src={"/moreDark.png"} alt="" width={20} height={20} />
       </div>
       <div className="flex flex-col gap-4">
