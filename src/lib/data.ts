@@ -920,7 +920,7 @@ export const calendarEvents = [
   {
     title: "Math",
     allDay: false,
-    start: new Date(2024, 9, 7, 8, 50),
+    start: new Date(2024, 9, 7, 8, 0),
     end: new Date(2024, 9, 7, 9, 45),
   },
   {
@@ -932,8 +932,8 @@ export const calendarEvents = [
   {
     title: "Biology",
     allDay: false,
-    start: new Date(2024, 7, 12, 10, 0),
-    end: new Date(2024, 7, 12, 10, 45),
+    start: new Date(2024, 9, 7, 10, 50),
+    end: new Date(2024, 9, 7, 12, 15),
   },
   {
     title: "Physics",

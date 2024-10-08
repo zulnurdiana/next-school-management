@@ -15,20 +15,18 @@ const BigCalendar = () => {
   };
 
   return (
-    <div>
-      <Calendar
-        localizer={localizer}
-        events={calendarEvents}
-        startAccessor="start"
-        endAccessor="end"
-        views={["work_week", "day"]}
-        view={view}
-        style={{ height: "98%" }}
-        onView={handleOnChangeView}
-        min={new Date(2024, 1, 0, 8, 0, 0)}
-        max={new Date(2024, 1, 0, 17, 0, 0)}
-      />
-    </div>
+    <Calendar
+      localizer={localizer}
+      events={calendarEvents}
+      startAccessor="start"
+      endAccessor="end"
+      views={["work_week", "day"]}
+      view={view}
+      style={{ height: "98%" }}
+      onView={handleOnChangeView}
+      min={new Date(2024, 1, 0, 8, 0, 0)}
+      max={new Date(2024, 1, 0, 17, 0, 0)}
+    />
   );
 };
 

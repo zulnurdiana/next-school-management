@@ -8,14 +8,13 @@
   font-family: "Inter", sans-serif !important;
 }
 
+.react-calendar__navigation__label__labelText {
+  font-weight: 600;
+}
+
 .react-calendar__tile--active {
   background-color: #c3ebfa !important;
   color: black !important;
-  border-radius: 25% !important;
-}
-
-.react-calendar__navigation__label__labelText {
-  font-weight: 600 !important;
 }
 
 .rbc-btn-group:first-child {
@@ -105,5 +104,10 @@
 
 .rbc-event-label {
   color: gray !important;
-  margin-bottom: 5px;
+  margin-bottom: 5px !important;
+}
+
+.rbc-events-container {
+  position: absolute !important;
+  top: 0% !important;
 }
