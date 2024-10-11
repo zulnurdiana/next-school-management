@@ -11,11 +11,58 @@ const StudentForm = dynamic(() => import("./forms/StudentForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 
+const ParentForm = dynamic(() => import("./forms/ParentForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const SubjectForm = dynamic(() => import("./forms/SubjectForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const ClassesForm = dynamic(() => import("./forms/ClassesForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const LessonForm = dynamic(() => import("./forms/LessonForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const ExamForm = dynamic(() => import("./forms/ExamForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const AssignmentForm = dynamic(() => import("./forms/AssignmentForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const ResultForm = dynamic(() => import("./forms/ResultForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const EventForm = dynamic(() => import("./forms/EventForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const AnnouncementForm = dynamic(() => import("./forms/AnnouncementForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+
 const forms: {
   [key: string]: (type: "create" | "update", data?: any) => JSX.Element;
 } = {
-  teacher: (type, data) => <TeacherForm type={type} data={data} />,
-  student: (type, data) => <StudentForm type={type} data={data} />,
+  teacher: (type, data) => (
+    <TeacherForm type={type} data={data} table="teacher" />
+  ),
+  student: (type, data) => (
+    <StudentForm type={type} data={data} table="student" />
+  ),
+  parent: (type, data) => <ParentForm type={type} data={data} table="parent" />,
+  subject: (type, data) => (
+    <SubjectForm type={type} data={data} table="subject" />
+  ),
+  class: (type, data) => <ClassesForm type={type} data={data} table="class" />,
+  lesson: (type, data) => <LessonForm type={type} data={data} table="lesson" />,
+  exam: (type, data) => <ExamForm type={type} data={data} table="exam" />,
+  assignment: (type, data) => (
+    <AssignmentForm type={type} data={data} table="assignment" />
+  ),
+  result: (type, data) => <ResultForm type={type} data={data} table="result" />,
+  event: (type, data) => <EventForm type={type} data={data} table="event" />,
+  announcement: (type, data) => (
+    <AnnouncementForm type={type} data={data} table="announcement" />
+  ),
 };
 
 const FormModal = ({

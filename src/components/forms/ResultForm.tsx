@@ -27,7 +27,7 @@ const schema = z.object({
 
 type Inputs = z.infer<typeof schema>;
 
-const TeacherForm = ({
+const ResultForm = ({
   type,
   data,
   table,
@@ -180,4 +180,4 @@ const TeacherForm = ({
   );
 };
 
-export default TeacherForm;
+export default ResultForm;

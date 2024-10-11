@@ -87,9 +87,7 @@ const TeacherListPage = () => {
             </button>
           </Link>
           {role === "admin" && (
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaPurpleLight">
-              <Image src={"/delete.png"} alt={""} height={16} width={16} />
-            </button>
+            <FormModal table="student" type="delete" id={item.id} />
           )}
         </div>
       </td>

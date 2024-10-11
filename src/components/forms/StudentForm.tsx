@@ -30,9 +30,23 @@ type Inputs = z.infer<typeof schema>;
 const StudentForm = ({
   type,
   data,
+  table,
 }: {
   type: "create" | "update";
   data?: any;
+  table?:
+    | "teacher"
+    | "student"
+    | "parent"
+    | "subject"
+    | "class"
+    | "lesson"
+    | "exam"
+    | "assignment"
+    | "result"
+    | "attendance"
+    | "event"
+    | "announcement";
 }) => {
   const {
     register,
@@ -48,7 +62,11 @@ const StudentForm = ({
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-      <h1 className="text-xl font-semibold">Create a new student</h1>
+      <h1 className="text-xl font-semibold">
+        {type === "create"
+          ? `Create a new ${table}`
+          : `Update ${table} Information`}
+      </h1>
       <span className="text-xs text-gray-400 font-medium">
         Authentication Information
       </span>
