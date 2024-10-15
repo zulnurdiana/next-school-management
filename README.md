@@ -1,6 +1,6 @@
 # Lama Dev School Management Dashboard
 
-## Getting Started
+## Getting Starteds
 
 First, run the development server:
 
