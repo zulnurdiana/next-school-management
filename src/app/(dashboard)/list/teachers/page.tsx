@@ -3,96 +3,113 @@ import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import { role, teachersData } from "@/lib/data";
+import prisma from "@/lib/prisma";
+import { ITEM_PER_PAGE } from "@/lib/settings";
+import { Class, Subject, Teacher } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
-const TeacherListPage = () => {
-  type Teacher = {
-    id: number;
-    teacherId: string;
-    name: string;
-    email?: string;
-    photo: string;
-    phone: string;
-    subjects: string[];
-    classes: string[];
-    address: string;
-  };
+type TeacherList = Teacher & { subjects: Subject[] } & { classes: Class[] };
 
-  const columns = [
-    {
-      header: "Info",
-      accessor: "info",
-    },
-    {
-      header: "Teacher ID",
-      accessor: "teacherId",
-      className: "hidden md:table-cell",
-    },
-    {
-      header: "Subjects",
-      accessor: "subjects",
-      className: "hidden md:table-cell",
-    },
-    {
-      header: "Classes",
-      accessor: "classes",
-      className: "hidden md:table-cell",
-    },
-    {
-      header: "Phone",
-      accessor: "phone",
-      className: "hidden lg:table-cell",
-    },
-    {
-      header: "Address",
-      accessor: "address",
-      className: "hidden lg:table-cell",
-    },
-    {
-      header: "Actions",
-      accessor: "action",
-    },
-  ];
+const columns = [
+  {
+    header: "Info",
+    accessor: "info",
+  },
+  {
+    header: "Teacher ID",
+    accessor: "teacherId",
+    className: "hidden md:table-cell",
+  },
+  {
+    header: "Subjects",
+    accessor: "subjects",
+    className: "hidden md:table-cell",
+  },
+  {
+    header: "Classes",
+    accessor: "classes",
+    className: "hidden md:table-cell",
+  },
+  {
+    header: "Phone",
+    accessor: "phone",
+    className: "hidden lg:table-cell",
+  },
+  {
+    header: "Address",
+    accessor: "address",
+    className: "hidden lg:table-cell",
+  },
+  {
+    header: "Actions",
+    accessor: "action",
+  },
+];
 
-  const renderRow = (item: Teacher) => (
-    <tr
-      key={item.id}
-      className="border-b border-gray-200 text-xs even:bg-slate-50 hover:bg-lamaPurpleLight"
-    >
-      <td className="flex items-center gap-4 p-4">
-        <Image
-          src={item.photo}
-          alt={""}
-          height={40}
-          width={40}
-          className="md:hidden w-10 h-10 xl:block rounded-full object-cover"
-        />
-        <div className="flex flex-col">
-          <h2 className="font-medium">{item.name}</h2>
-          <span className="text-xs text-gray-500">{item?.email}</span>
-        </div>
-      </td>
-      <td className="hidden md:table-cell">{item.teacherId}</td>
-      <td className="hidden md:table-cell">{item.subjects.join(",")}</td>
-      <td className="hidden md:table-cell">{item.classes.join(",")}</td>
-      <td className="hidden md:table-cell">{item.phone}</td>
-      <td className="hidden md:table-cell">{item.address}</td>
-      <td>
-        <div className="flex items-center gap-2">
-          <Link href={`/list/teachers/${item.id}`}>
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaSky">
-              <Image src={"/view.png"} alt={""} height={16} width={16} />
-            </button>
-          </Link>
-          {role === "admin" && (
-            <FormModal table="student" type="delete" id={item.id} />
-          )}
-        </div>
-      </td>
-    </tr>
-  );
+const renderRow = (item: TeacherList) => (
+  <tr
+    key={item.id}
+    className="border-b border-gray-200 text-xs even:bg-slate-50 hover:bg-lamaPurpleLight"
+  >
+    <td className="flex items-center gap-4 p-4">
+      <Image
+        src={item.img || "/noAvatar.png"}
+        alt={""}
+        height={40}
+        width={40}
+        className="md:hidden w-10 h-10 xl:block rounded-full object-cover"
+      />
+      <div className="flex flex-col">
+        <h2 className="font-medium">{item.name}</h2>
+        <span className="text-xs text-gray-500">{item?.email}</span>
+      </div>
+    </td>
+    <td className="hidden md:table-cell">{item.username}</td>
+    <td className="hidden md:table-cell">
+      {item.subjects.map((subject) => subject.name).join(",")}
+    </td>
+    <td className="hidden md:table-cell">
+      {item.classes.map((classesItem) => classesItem.name).join(",")}
+    </td>
+    <td className="hidden md:table-cell">{item.phone}</td>
+    <td className="hidden md:table-cell">{item.address}</td>
+    <td>
+      <div className="flex items-center gap-2">
+        <Link href={`/list/teachers/${item.id}`}>
+          <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaSky">
+            <Image src={"/view.png"} alt={""} height={16} width={16} />
+          </button>
+        </Link>
+        {role === "admin" && (
+          <FormModal table="teacher" type="delete" id={item.id} />
+        )}
+      </div>
+    </td>
+  </tr>
+);
+
+const TeacherListPage = async ({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | undefined };
+}) => {
+  const { page, ...queryParams } = searchParams;
+
+  const p = page ? parseInt(page) : 1;
+
+  const [data, count] = await prisma.$transaction([
+    prisma.teacher.findMany({
+      include: {
+        subjects: true,
+        classes: true,
+      },
+      take: ITEM_PER_PAGE,
+      skip: ITEM_PER_PAGE * (p - 1),
+    }),
+    prisma.teacher.count(),
+  ]);
 
   return (
     <div className=" bg-white rounded-md p-4 mt-0 flex-1">
@@ -113,10 +130,10 @@ const TeacherListPage = () => {
         </div>
       </div>
       {/* LIST */}
-      <Table columns={columns} renderRow={renderRow} data={teachersData} />
+      <Table columns={columns} renderRow={renderRow} data={data} />
 
       {/* PAGINATION */}
-      <Pagination />
+      <Pagination page={p} count={count} />
     </div>
   );
 };
