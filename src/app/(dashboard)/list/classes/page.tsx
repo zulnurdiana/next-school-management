@@ -16,7 +16,7 @@ import { Class, Grade, Prisma, Teacher } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-type ClassesList = Class  & { supervisor: Teacher };
+type ClassesList = Class & { supervisor: Teacher };
 
 const columns = [
   {
@@ -53,7 +53,9 @@ const renderRow = (item: ClassesList) => (
     <td className="flex items-center gap-4 p-4">{item.name}</td>
     <td className="hidden md:table-cell">{item.capacity}</td>
     <td className="hidden md:table-cell">{item.name[0]}</td>
-    <td className="hidden md:table-cell">{item.supervisor.name + "" + item.supervisor.surname}</td>
+    <td className="hidden md:table-cell">
+      {item.supervisor.name + "" + item.supervisor.surname}
+    </td>
 
     <td className="p-2">
       <div className="flex items-center gap-2">
@@ -118,8 +120,6 @@ const ClassesListPage = async ({
       where: query,
     }),
   ]);
-
-  console.log(data);
 
   return (
     <div className=" bg-white rounded-md p-4 mt-0 flex-1">
