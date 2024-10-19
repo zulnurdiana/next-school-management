@@ -5,6 +5,7 @@ import TableSearch from "@/components/TableSearch";
 import { assignmentsData, eventsData, resultsData, role } from "@/lib/data";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
+import { curentUserId } from "@/lib/utils";
 import { Announcement, Class, Event, Prisma } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
@@ -37,10 +38,14 @@ const columns = [
     className: "hidden md:table-cell",
   },
 
-  {
-    header: "Actions",
-    accessor: "action",
-  },
+  ...(role === "admin"
+    ? [
+        {
+          header: "Actions",
+          accessor: "action",
+        },
+      ]
+    : []),
 ];
 
 const renderRow = (item: EventList) => (
@@ -49,6 +54,7 @@ const renderRow = (item: EventList) => (
     className="border-b border-gray-200 text-xs even:bg-slate-50 hover:bg-lamaPurpleLight"
   >
     <td className="flex items-center gap-4 p-4">{item.title}</td>
+    <td>{item.class?.name || ""}</td>
     <td className="">
       {new Intl.DateTimeFormat("en-US").format(item.startTime)}
     </td>
@@ -85,6 +91,8 @@ const EventListPage = async ({
   searchParams: { [key: string]: string | undefined };
 }) => {
   const { page, ...queryParams } = searchParams;
+  const p = page ? parseInt(page) : 1;
+  // URL PARAMS CONDITION
 
   const query: Prisma.EventWhereInput = {};
 
@@ -93,12 +101,8 @@ const EventListPage = async ({
       if (value !== undefined) {
         switch (key) {
           case "search":
-            query.title = {
-              contains: value,
-              mode: "insensitive",
-            };
+            query.title = { contains: value, mode: "insensitive" };
             break;
-
           default:
             break;
         }
@@ -106,7 +110,20 @@ const EventListPage = async ({
     }
   }
 
-  const p = page ? parseInt(page) : 1;
+  // ROLE CONDITIONS
+
+  const roleConditions = {
+    teacher: { lessons: { some: { teacherId: curentUserId! } } },
+    student: { students: { some: { id: curentUserId! } } },
+    parent: { students: { some: { parentId: curentUserId! } } },
+  };
+
+  query.OR = [
+    { classId: null },
+    {
+      class: roleConditions[role as keyof typeof roleConditions] || {},
+    },
+  ];
 
   const [data, count] = await prisma.$transaction([
     prisma.event.findMany({
@@ -117,9 +134,7 @@ const EventListPage = async ({
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
     }),
-    prisma.event.count({
-      where: query,
-    }),
+    prisma.event.count({ where: query }),
   ]);
   return (
     <div className=" bg-white rounded-md p-4 mt-0 flex-1">

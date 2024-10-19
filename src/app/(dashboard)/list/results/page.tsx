@@ -2,7 +2,7 @@ import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
-import { assignmentsData, resultsData, role } from "@/lib/data";
+import { curentUserId, role } from "@/lib/utils";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { Prisma } from "@prisma/client";
@@ -52,10 +52,14 @@ const columns = [
     className: "hidden md:table-cell",
   },
 
-  {
-    header: "Actions",
-    accessor: "action",
-  },
+  ...(role === "admin" || role === "teacher"
+    ? [
+        {
+          header: "Actions",
+          accessor: "action",
+        },
+      ]
+    : []),
 ];
 const renderRow = (item: ResultList) => (
   <tr
@@ -76,7 +80,7 @@ const renderRow = (item: ResultList) => (
 
     <td className="p-2">
       <div className="flex items-center gap-2">
-        {role === "admin" && (
+        {(role === "admin" || role === "teacher") && (
           <>
             <FormModal table="result" type="update" data={item} />
             <FormModal table="result" type="delete" id={item.id} />
@@ -107,7 +111,7 @@ const ResultListPage = async ({
           case "search":
             query.OR = [
               { student: { name: { contains: value, mode: "insensitive" } } },
-              {exam : { title: { contains: value, mode: "insensitive" } }},
+              { exam: { title: { contains: value, mode: "insensitive" } } },
             ];
             break;
 
@@ -116,6 +120,40 @@ const ResultListPage = async ({
         }
       }
     }
+  }
+
+  // ROLE CONDITION
+  switch (role) {
+    case "admin":
+      break;
+    case "student":
+      query.studentId = curentUserId!;
+      break;
+    case "teacher":
+      query.OR = [
+        {
+          exam: {
+            lesson: {
+              teacherId: curentUserId!,
+            },
+          },
+        },
+        {
+          assignment: {
+            lesson: {
+              teacherId: curentUserId!,
+            },
+          },
+        },
+      ];
+      break;
+    case "parent":
+      query.student = {
+        parentId: curentUserId!,
+      };
+      break;
+    default:
+      break;
   }
 
   const p = page ? parseInt(page) : 1;
@@ -188,7 +226,9 @@ const ResultListPage = async ({
             <button className="w-8 h-8 flex items-center justify-center bg-lamaYellow rounded-full">
               <Image src={"/sort.png"} alt={""} height={14} width={14} />
             </button>
-            {role === "admin" && <FormModal table="result" type="create" />}
+            {(role === "admin" || role === "teacher") && (
+              <FormModal table="result" type="create" />
+            )}
           </div>
         </div>
       </div>

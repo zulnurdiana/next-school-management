@@ -1,7 +1,10 @@
 import { UserButton, UserProfile } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 import Image from "next/image";
 
-const Navbar = () => {
+const Navbar = async () => {
+  const user = await currentUser();
+  const role = (user?.publicMetadata as { role?: string }).role;
   return (
     <div className="flex justify-between items-center p-4">
       <div className="hidden md:flex items-center gap-2 rounded-full ring-[1.5px] ring-gray-300 px-2">
@@ -25,7 +28,7 @@ const Navbar = () => {
         </div>
         <div className="flex flex-col">
           <span className="leading-3 font-bold">John Doe</span>
-          <span className="text-[15px] text-end text-gray-500">Admin</span>
+          <span className="text-[15px] text-end text-gray-500">{role}</span>
         </div>
         <div>
           {/* <Image

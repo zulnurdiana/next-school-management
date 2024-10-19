@@ -2,7 +2,7 @@ import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
-import { assignmentsData, role } from "@/lib/data";
+import { curentUserId, role } from "@/lib/utils";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { Assignment, Class, Prisma, Subject, Teacher } from "@prisma/client";
@@ -38,10 +38,14 @@ const columns = [
     className: "hidden md:table-cell",
   },
 
-  {
-    header: "Actions",
-    accessor: "action",
-  },
+  ...(role === "admin" || role === "teacher"
+    ? [
+        {
+          header: "Actions",
+          accessor: "action",
+        },
+      ]
+    : []),
 ];
 
 const renderRow = (item: AssignmentList) => (
@@ -49,8 +53,8 @@ const renderRow = (item: AssignmentList) => (
     key={item.id}
     className="border-b border-gray-200 text-xs even:bg-slate-50 hover:bg-lamaPurpleLight"
   >
-    <td className="">{item.lesson.subject.name}</td>
-    <td className="">{item.lesson.class.name}</td>
+    <td className="p-2">{item.lesson.subject.name}</td>
+    <td className="p-2">{item.lesson.class.name}</td>
     <td className="hidden md:table-cell">
       {item.lesson.teacher.name + " " + item.lesson.teacher.surname}{" "}
     </td>
@@ -60,12 +64,13 @@ const renderRow = (item: AssignmentList) => (
 
     <td className="p-2">
       <div className="flex items-center gap-2">
-        {role === "admin" && (
-          <>
-            <FormModal table="assignment" type="update" data={item} />
-            <FormModal table="assignment" type="delete" id={item.id} />
-          </>
-        )}
+        {role === "admin" ||
+          (role === "teacher" && (
+            <>
+              <FormModal table="assignment" type="update" data={item} />
+              <FormModal table="assignment" type="delete" id={item.id} />
+            </>
+          ))}
       </div>
     </td>
   </tr>
@@ -78,6 +83,8 @@ const AssignmentListPage = async ({
   const { page, ...queryParams } = searchParams;
 
   const query: Prisma.AssignmentWhereInput = {};
+
+  query.lesson = {};
 
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {
@@ -105,6 +112,34 @@ const AssignmentListPage = async ({
         }
       }
     }
+  }
+
+  switch (role) {
+    case "admin":
+      break;
+    case "teacher":
+      query.lesson.teacherId = curentUserId!;
+      break;
+    case "student":
+      query.lesson.class = {
+        students: {
+          some: {
+            id: curentUserId!,
+          },
+        },
+      };
+      break;
+    case "parent":
+      query.lesson.class = {
+        students: {
+          some: {
+            parentId: curentUserId!,
+          },
+        },
+      };
+      break;
+    default:
+      break;
   }
 
   const p = page ? parseInt(page) : 1;
@@ -158,7 +193,10 @@ const AssignmentListPage = async ({
             <button className="w-8 h-8 flex items-center justify-center bg-lamaYellow rounded-full">
               <Image src={"/sort.png"} alt={""} height={14} width={14} />
             </button>
-            {role === "admin" && <FormModal table="assignment" type="create" />}
+            {role === "admin" ||
+              (role === "teacher" && (
+                <FormModal table="assignment" type="create" />
+              ))}
           </div>
         </div>
       </div>
