@@ -22,13 +22,41 @@ export const createSubject = async (
       },
     });
 
-    revalidatePath("/list/subjects");
+    /*  revalidatePath("/list/subjects"); */
     return {
       success: true,
       error: false,
     };
   } catch (error) {
-    console.log(error);
+    return {
+      success: false,
+      error: true,
+    };
+  }
+};
+
+export const updateSubject = async (
+  currentState: CurrentState,
+  data: SubjectSchema
+) => {
+  try {
+    const { name } = data;
+
+    await prisma.subject.update({
+      data: {
+        name,
+      },
+      where: {
+        id: data.id,
+      },
+    });
+
+    /*  revalidatePath("/list/subjects"); */
+    return {
+      success: true,
+      error: false,
+    };
+  } catch (error) {
     return {
       success: false,
       error: true,

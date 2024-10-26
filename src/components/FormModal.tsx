@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
 const TeacherForm = dynamic(() => import("./forms/TeacherForm"), {
   loading: () => <h1>Loading...</h1>,
@@ -40,29 +40,33 @@ const AnnouncementForm = dynamic(() => import("./forms/AnnouncementForm"), {
 });
 
 const forms: {
-  [key: string]: (type: "create" | "update", data?: any) => JSX.Element;
+  [key: string]: (
+    setOpen: Dispatch<SetStateAction<boolean>>,
+    type: "create" | "update",
+    data?: any
+  ) => JSX.Element;
 } = {
-  teacher: (type, data) => (
+  teacher: (setOpen, type, data) => (
     <TeacherForm type={type} data={data} table="teacher" />
   ),
-  student: (type, data) => (
+  student: (setOpen, type, data) => (
     <StudentForm type={type} data={data} table="student" />
   ),
-  parent: (type, data) => <ParentForm type={type} data={data} table="parent" />,
-  subject: (type, data) => (
-    <SubjectForm type={type} data={data} table="subject" />
+  // parent: (type, data) => <ParentForm type={type} data={data} table="parent" />,
+  subject: (setOpen, type, data) => (
+    <SubjectForm type={type} data={data} table="subject" setOpen={setOpen} />
   ),
-  class: (type, data) => <ClassesForm type={type} data={data} table="class" />,
-  lesson: (type, data) => <LessonForm type={type} data={data} table="lesson" />,
-  exam: (type, data) => <ExamForm type={type} data={data} table="exam" />,
-  assignment: (type, data) => (
-    <AssignmentForm type={type} data={data} table="assignment" />
-  ),
-  result: (type, data) => <ResultForm type={type} data={data} table="result" />,
-  event: (type, data) => <EventForm type={type} data={data} table="event" />,
-  announcement: (type, data) => (
-    <AnnouncementForm type={type} data={data} table="announcement" />
-  ),
+  // class: (type, data) => <ClassesForm type={type} data={data} table="class" />,
+  // lesson: (type, data) => <LessonForm type={type} data={data} table="lesson" />,
+  // exam: (type, data) => <ExamForm type={type} data={data} table="exam" />,
+  // assignment: (type, data) => (
+  //   <AssignmentForm type={type} data={data} table="assignment" />
+  // ),
+  // result: (type, data) => <ResultForm type={type} data={data} table="result" />,
+  // event: (type, data) => <EventForm type={type} data={data} table="event" />,
+  // announcement: (type, data) => (
+  //   <AnnouncementForm type={type} data={data} table="announcement" />
+  // ),
 };
 
 const FormModal = ({
@@ -112,7 +116,7 @@ const FormModal = ({
         </button>
       </form>
     ) : type === "create" || type === "update" ? (
-      forms[table](type, data)
+      forms[table](setOpen, type, data)
     ) : (
       "Form not found!"
     );
