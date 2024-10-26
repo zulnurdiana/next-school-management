@@ -15,6 +15,7 @@ const SubjectForm = ({
   data,
   table,
   setOpen,
+  relatedData,
 }: {
   type: "create" | "update";
   data?: any;
@@ -32,6 +33,7 @@ const SubjectForm = ({
     | "event"
     | "announcement";
   setOpen: Dispatch<SetStateAction<boolean>>;
+  relatedData?: any;
 }) => {
   const {
     register,
@@ -61,6 +63,8 @@ const SubjectForm = ({
     }
   }, [state, type, router, setOpen]);
 
+  const { teachers } = relatedData;
+
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold">
@@ -87,6 +91,29 @@ const SubjectForm = ({
             hidden={true}
           />
         )}
+
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <label className="text-xs text-gray-500">Teachers</label>
+          <select
+            multiple
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            {...register("teachers")}
+            defaultValue={data?.teachers}
+          >
+            {teachers.map(
+              (teacher: { id: string; name: string; surname: string }) => (
+                <option value={teacher.id} key={teacher.id}>
+                  {teacher.name + " " + teacher.surname}
+                </option>
+              )
+            )}
+          </select>
+          {errors.teachers?.message && (
+            <p className="text-xs text-red-400">
+              {errors.teachers.message.toString()}
+            </p>
+          )}
+        </div>
       </div>
       {state.error && (
         <div className="text-red-500">Something went wrong..</div>
