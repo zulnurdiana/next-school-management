@@ -1,3 +1,4 @@
+import { HTMLAttributes } from "react";
 import { FieldError } from "react-hook-form";
 
 type InputFieldProps = {
@@ -8,6 +9,7 @@ type InputFieldProps = {
   defaultValue?: string;
   error?: FieldError;
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
+  hidden?: boolean;
 };
 
 const InputField = ({

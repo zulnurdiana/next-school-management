@@ -84,6 +84,7 @@ const SubjectForm = ({
             defaultValue={data?.id}
             register={register}
             error={errors?.id}
+            hidden={true}
           />
         )}
       </div>

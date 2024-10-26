@@ -1,8 +1,28 @@
 "use client";
 
+import { deleteSubject } from "@/lib/action";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { Dispatch, SetStateAction, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useFormState } from "react-dom";
+
+import { toast } from "react-toastify";
+
+const deleteActionMap = {
+  subject: deleteSubject,
+  class: deleteSubject,
+  teacher: deleteSubject,
+  student: deleteSubject,
+  exam: deleteSubject,
+  parent: deleteSubject,
+  lesson: deleteSubject,
+  assignment: deleteSubject,
+  result: deleteSubject,
+  attendance: deleteSubject,
+  event: deleteSubject,
+  announcement: deleteSubject,
+};
 
 const TeacherForm = dynamic(() => import("./forms/TeacherForm"), {
   loading: () => <h1>Loading...</h1>,
@@ -106,8 +126,23 @@ const FormModal = ({
   const [open, setOpen] = useState(false);
 
   const Form = () => {
+    const [state, formAction] = useFormState(deleteActionMap[table], {
+      success: false,
+      error: false,
+    });
+
+    const router = useRouter();
+
+    useEffect(() => {
+      if (state.success) {
+        toast(`${table} deleted successfully!`);
+
+        router.refresh();
+      }
+    }, [state, router]);
     return type === "delete" && id ? (
-      <form action="" className="p-4 flex flex-col gap-4">
+      <form action={formAction} className="p-4 flex flex-col gap-4">
+        <input type="text | number" name="id" value={id} hidden />
         <span className="text-center font-medium">
           All data will be lost. Are you sure you want to delete this {table}?
         </span>
@@ -136,10 +171,10 @@ const FormModal = ({
           <div className="bg-white p-5 rounded-md w-[90%] md:w-[70%] lg:w-[65%] xl:w-[55%] 2xl:w-[45%] relative">
             <Form />
             <div
-              className="absolute top-1 right-2 cursor-pointer"
+              className="absolute top-1.5 right-3 cursor-pointer"
               onClick={() => setOpen(false)}
             >
-              <Image src={"/close.png"} alt={""} height={20} width={20} />
+              <Image src={"/close.png"} alt={""} height={18} width={18} />
             </div>
           </div>
         </div>
