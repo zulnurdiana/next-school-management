@@ -9,6 +9,7 @@ import { Class, Grade, Prisma, Teacher } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import FormContainer from "@/components/FormContainer";
 type ClassesList = Class & { supervisor: Teacher };
 
 const columns = [
@@ -58,8 +59,8 @@ const renderRow = (item: ClassesList) => (
       <div className="flex items-center gap-2">
         {role === "admin" && (
           <>
-            <FormModal table="class" type="update" data={item} />
-            <FormModal table="class" type="delete" id={item.id} />
+            <FormContainer table="class" type="update" data={item} />
+            <FormContainer table="class" type="delete" id={item.id} />
           </>
         )}
       </div>
@@ -132,7 +133,7 @@ const ClassesListPage = async ({
             <button className="w-8 h-8 flex items-center justify-center bg-lamaYellow rounded-full">
               <Image src={"/sort.png"} alt={""} height={14} width={14} />
             </button>
-            {role === "admin" && <FormModal table="class" type="create" />}
+            {role === "admin" && <FormContainer table="class" type="create" />}
           </div>
         </div>
       </div>

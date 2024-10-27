@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteSubject } from "@/lib/action";
+import { deleteClass, deleteSubject } from "@/lib/action";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -12,7 +12,7 @@ import { FormContainerProps } from "./FormContainer";
 
 const deleteActionMap = {
   subject: deleteSubject,
-  class: deleteSubject,
+  class: deleteClass,
   teacher: deleteSubject,
   student: deleteSubject,
   exam: deleteSubject,
@@ -94,7 +94,15 @@ const forms: {
       relatedData={relatedData}
     />
   ),
-  // class: (type, data) => <ClassesForm type={type} data={data} table="class" />,
+  class: (setOpen, type, data, relatedData) => (
+    <ClassesForm
+      type={type}
+      data={data}
+      table="class"
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
+  ),
   // lesson: (type, data) => <LessonForm type={type} data={data} table="lesson" />,
   // exam: (type, data) => <ExamForm type={type} data={data} table="exam" />,
   // assignment: (type, data) => (
