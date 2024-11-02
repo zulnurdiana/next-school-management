@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import prisma from "./prisma";
 import { ClassSchema, SubjectSchema, TeacherSchema } from "./validation";
+import { clerkClient } from "@clerk/nextjs/server";
 
 type CurrentState = {
   success: boolean;
@@ -158,9 +159,36 @@ export const createTeacher = async (
   data: TeacherSchema
 ) => {
   try {
-    // await prisma.teacher.create({
-    //   // data,
-    // });
+    const teacher = await clerkClient.users.createUser({
+      username: data.username,
+      firstName: data.name,
+      lastName: data.surname,
+      password: data.password,
+      publicMetadata: {
+        role: "teacher",
+      },
+    });
+
+    await prisma.teacher.create({
+      data: {
+        id: teacher.id,
+        username: data.username,
+        name: data.name,
+        surname: data.surname,
+        email: data.email,
+        phone: data.phone,
+        address: data.address,
+        img: data.img,
+        bloodType: data.bloodType,
+        birthday: data.birthday,
+        sex: data.sex,
+        subjects: {
+          connect: data.subjects?.map((subjectId: string) => ({
+            id: parseInt(subjectId),
+          })),
+        },
+      },
+    });
 
     /*  revalidatePath("/list/teacher"); */
     return {
