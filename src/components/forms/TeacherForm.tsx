@@ -57,7 +57,7 @@ const TeacherForm = ({
   const [img, setImg] = useState<any>();
 
   const onSubmit = handleSubmit((data) => {
-    formAction({ ...data, img: img.secure_url });
+    formAction({ ...data, img: img?.secure_url });
   });
 
   useEffect(() => {
