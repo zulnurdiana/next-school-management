@@ -11,59 +11,58 @@ import React from "react";
 import FormContainer from "@/components/FormContainer";
 import { auth } from "@clerk/nextjs/server";
 
-const { userId, sessionClaims } = auth();
-const role = (sessionClaims?.metadata as { role?: string })?.role;
-const curentUserId = userId as string;
-
 type SubjectList = Subject & { teachers: Teacher[] } & { lessons: Lesson[] };
-const columns = [
-  {
-    header: "Subject Name",
-    accessor: "subjectName",
-  },
-  {
-    header: "Teachers",
-    accessor: "teachers",
-    className: "hidden md:table-cell",
-  },
-
-  {
-    header: "Actions",
-    accessor: "action",
-  },
-];
-
-const renderRow = (item: SubjectList) => (
-  <tr
-    key={item.id}
-    className="border-b border-gray-200 text-xs even:bg-slate-50 hover:bg-lamaPurpleLight"
-  >
-    <td className="flex items-center gap-4 p-4">{item.name}</td>
-    <td className="hidden md:table-cell">
-      {item.teachers
-        .map((teacher) => teacher.name + " " + teacher.surname)
-        .join(".")}
-    </td>
-
-    <td className="p-2">
-      <div className="flex items-center gap-2">
-        {role === "admin" && (
-          <>
-            <FormContainer table="subject" type="update" data={item} />
-            <FormContainer table="subject" type="delete" id={item.id} />
-          </>
-        )}
-      </div>
-    </td>
-  </tr>
-);
 
 const SubjectListPage = async ({
   searchParams,
 }: {
   searchParams: { [key: string]: string | undefined };
 }) => {
+  const { userId, sessionClaims } = auth();
+  const role = (sessionClaims?.metadata as { role?: string })?.role;
+  const curentUserId = userId as string;
   const { page, ...queryParams } = searchParams;
+  const columns = [
+    {
+      header: "Subject Name",
+      accessor: "subjectName",
+    },
+    {
+      header: "Teachers",
+      accessor: "teachers",
+      className: "hidden md:table-cell",
+    },
+
+    {
+      header: "Actions",
+      accessor: "action",
+    },
+  ];
+
+  const renderRow = (item: SubjectList) => (
+    <tr
+      key={item.id}
+      className="border-b border-gray-200 text-xs even:bg-slate-50 hover:bg-lamaPurpleLight"
+    >
+      <td className="flex items-center gap-4 p-4">{item.name}</td>
+      <td className="hidden md:table-cell">
+        {item.teachers
+          .map((teacher) => teacher.name + " " + teacher.surname)
+          .join(".")}
+      </td>
+
+      <td className="p-2">
+        <div className="flex items-center gap-2">
+          {role === "admin" && (
+            <>
+              <FormContainer table="subject" type="update" data={item} />
+              <FormContainer table="subject" type="delete" id={item.id} />
+            </>
+          )}
+        </div>
+      </td>
+    </tr>
+  );
 
   const query: Prisma.SubjectWhereInput = {};
 

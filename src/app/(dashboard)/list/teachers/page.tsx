@@ -11,98 +11,97 @@ import React from "react";
 import FormContainer from "@/components/FormContainer";
 import { auth } from "@clerk/nextjs/server";
 
-type TeacherList = Teacher & { subjects: Subject[] } & { classes: Class[] };
-const { userId, sessionClaims } = auth();
-const role = (sessionClaims?.metadata as { role?: string })?.role;
-const curentUserId = userId as string;
-const columns = [
-  {
-    header: "Info",
-    accessor: "info",
-  },
-  {
-    header: "Teacher ID",
-    accessor: "teacherId",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "Subjects",
-    accessor: "subjects",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "Classes",
-    accessor: "classes",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "Phone",
-    accessor: "phone",
-    className: "hidden lg:table-cell",
-  },
-  {
-    header: "Address",
-    accessor: "address",
-    className: "hidden lg:table-cell",
-  },
-  ...(role === "admin"
-    ? [
-        {
-          header: "Actions",
-          accessor: "action",
-        },
-      ]
-    : []),
-];
-
-const renderRow = (item: TeacherList) => (
-  <tr
-    key={item.id}
-    className="border-b border-gray-200 text-xs even:bg-slate-50 hover:bg-lamaPurpleLight"
-  >
-    <td className="flex items-center gap-4 p-4">
-      <Image
-        src={item.img || "/noAvatar.png"}
-        alt={""}
-        height={40}
-        width={40}
-        className="md:hidden w-10 h-10 xl:block rounded-full object-cover"
-      />
-      <div className="flex flex-col">
-        <h2 className="font-medium">{item.name}</h2>
-        <span className="text-xs text-gray-500">{item?.email}</span>
-      </div>
-    </td>
-    <td className="hidden md:table-cell">{item.username}</td>
-    <td className="hidden md:table-cell">
-      {item.subjects.map((subject) => subject.name).join(",")}
-    </td>
-    <td className="hidden md:table-cell">
-      {item.classes.map((classesItem) => classesItem.name).join(",")}
-    </td>
-    <td className="hidden md:table-cell">{item.phone}</td>
-    <td className="hidden md:table-cell">{item.address}</td>
-    <td>
-      <div className="flex items-center gap-2">
-        <Link href={`/list/teachers/${item.id}`}>
-          <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaSky">
-            <Image src={"/view.png"} alt={""} height={16} width={16} />
-          </button>
-        </Link>
-        {role === "admin" && (
-          <FormContainer table="teacher" type="delete" id={item.id} />
-        )}
-      </div>
-    </td>
-  </tr>
-);
-
 const TeacherListPage = async ({
   searchParams,
 }: {
   searchParams: { [key: string]: string | undefined };
 }) => {
+  type TeacherList = Teacher & { subjects: Subject[] } & { classes: Class[] };
+  const { userId, sessionClaims } = auth();
+  const role = (sessionClaims?.metadata as { role?: string })?.role;
+  const curentUserId = userId as string;
   const { page, ...queryParams } = searchParams;
+  const columns = [
+    {
+      header: "Info",
+      accessor: "info",
+    },
+    {
+      header: "Teacher ID",
+      accessor: "teacherId",
+      className: "hidden md:table-cell",
+    },
+    {
+      header: "Subjects",
+      accessor: "subjects",
+      className: "hidden md:table-cell",
+    },
+    {
+      header: "Classes",
+      accessor: "classes",
+      className: "hidden md:table-cell",
+    },
+    {
+      header: "Phone",
+      accessor: "phone",
+      className: "hidden lg:table-cell",
+    },
+    {
+      header: "Address",
+      accessor: "address",
+      className: "hidden lg:table-cell",
+    },
+    ...(role === "admin"
+      ? [
+          {
+            header: "Actions",
+            accessor: "action",
+          },
+        ]
+      : []),
+  ];
+
+  const renderRow = (item: TeacherList) => (
+    <tr
+      key={item.id}
+      className="border-b border-gray-200 text-xs even:bg-slate-50 hover:bg-lamaPurpleLight"
+    >
+      <td className="flex items-center gap-4 p-4">
+        <Image
+          src={item.img || "/noAvatar.png"}
+          alt={""}
+          height={40}
+          width={40}
+          className="md:hidden w-10 h-10 xl:block rounded-full object-cover"
+        />
+        <div className="flex flex-col">
+          <h2 className="font-medium">{item.name}</h2>
+          <span className="text-xs text-gray-500">{item?.email}</span>
+        </div>
+      </td>
+      <td className="hidden md:table-cell">{item.username}</td>
+      <td className="hidden md:table-cell">
+        {item.subjects.map((subject) => subject.name).join(",")}
+      </td>
+      <td className="hidden md:table-cell">
+        {item.classes.map((classesItem) => classesItem.name).join(",")}
+      </td>
+      <td className="hidden md:table-cell">{item.phone}</td>
+      <td className="hidden md:table-cell">{item.address}</td>
+      <td>
+        <div className="flex items-center gap-2">
+          <Link href={`/list/teachers/${item.id}`}>
+            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaSky">
+              <Image src={"/view.png"} alt={""} height={16} width={16} />
+            </button>
+          </Link>
+          {role === "admin" && (
+            <FormContainer table="teacher" type="delete" id={item.id} />
+          )}
+        </div>
+      </td>
+    </tr>
+  );
 
   const query: Prisma.TeacherWhereInput = {};
 
