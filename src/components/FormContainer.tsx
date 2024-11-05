@@ -1,5 +1,7 @@
 import prisma from "@/lib/prisma";
 import FormModal from "./FormModal";
+import { role } from "@/lib/data";
+import { auth } from "@clerk/nextjs/server";
 
 export type FormContainerProps = {
   table:
@@ -31,11 +33,11 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
         relatedData = { teachers: subjectTeachers };
         break;
       case "class":
-        const classTeachers = await prisma.teacher.findMany({
-          select: { id: true, name: true, surname: true },
-        });
         const classGrades = await prisma.grade.findMany({
           select: { id: true, level: true },
+        });
+        const classTeachers = await prisma.teacher.findMany({
+          select: { id: true, name: true, surname: true },
         });
         relatedData = { teachers: classTeachers, grades: classGrades };
         break;
@@ -43,10 +45,31 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
         const teacherSubjects = await prisma.subject.findMany({
           select: { id: true, name: true },
         });
-        const teacherClasses = await prisma.class.findMany({
+        relatedData = { subjects: teacherSubjects };
+        break;
+      case "student":
+        const studentGrades = await prisma.grade.findMany({
+          select: { id: true, level: true },
+        });
+        const studentClasses = await prisma.class.findMany({
+          include: { _count: { select: { students: true } } },
+        });
+        relatedData = { classes: studentClasses, grades: studentGrades };
+        break;
+      case "exam":
+        const { userId, sessionClaims } = auth();
+        const role = (
+          sessionClaims?.metadata as {
+            role?: "admin" | "teacher" | "student" | "parent";
+          }
+        )?.role;
+        const examLessons = await prisma.lesson.findMany({
+          where: {
+            ...(role === "teacher" ? { teacherId: userId! } : {}),
+          },
           select: { id: true, name: true },
         });
-        relatedData = { teachers: teacherClasses, subjects: teacherSubjects };
+        relatedData = { lessons: examLessons };
         break;
 
       default:
