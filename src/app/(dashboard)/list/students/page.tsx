@@ -2,15 +2,19 @@ import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
-import { role } from "@/lib/utils";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { Class, Prisma, Student } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import FormContainer from "@/components/FormContainer";
+import { auth } from "@clerk/nextjs/server";
 
 type StudentList = Student & { class: Class };
+const { userId, sessionClaims } = auth();
+const role = (sessionClaims?.metadata as { role?: string })?.role;
+const curentUserId = userId as string;
 
 const columns = [
   {
@@ -79,7 +83,7 @@ const renderRow = (item: StudentList) => (
           </button>
         </Link>
         {role === "admin" && (
-          <FormModal table="student" type="delete" id={item.id} />
+          <FormContainer table="student" type="delete" id={item.id} />
         )}
       </div>
     </td>
@@ -152,7 +156,7 @@ const StudentListPage = async ({
             <button className="w-8 h-8 flex items-center justify-center bg-lamaYellow rounded-full">
               <Image src={"/sort.png"} alt={""} height={14} width={14} />
             </button>
-            <FormModal table="student" type="create" />
+            <FormContainer table="student" type="create" />
           </div>
         </div>
       </div>

@@ -1,8 +1,8 @@
 import { auth } from "@clerk/nextjs/server";
 
-const { userId, sessionClaims } = auth();
-export const role = (sessionClaims?.metadata as { role?: string })?.role;
-export const curentUserId = userId as string;
+// const { userId, sessionClaims } = auth();
+// export const role = (sessionClaims?.metadata as { role?: string })?.role;
+// export const curentUserId = userId as string;
 
 const getLatestMonday = (): Date => {
   const today = new Date();

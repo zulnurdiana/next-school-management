@@ -3,12 +3,17 @@ import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import prisma from "@/lib/prisma";
-import { curentUserId, role } from "@/lib/utils";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { Class, Exam, Prisma, Subject, Teacher } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import FormContainer from "@/components/FormContainer";
+import { auth } from "@clerk/nextjs/server";
+
+const { userId, sessionClaims } = auth();
+const role = (sessionClaims?.metadata as { role?: string })?.role;
+const curentUserId = userId as string;
 
 type ExamList = Exam & {
   lesson: {
@@ -64,13 +69,12 @@ const renderRow = (item: ExamList) => (
 
     <td className="p-2">
       <div className="flex items-center gap-2">
-        {role === "admin" ||
-          (role === "teacher" && (
-            <>
-              <FormModal table="exam" type="update" data={item} />
-              <FormModal table="exam" type="delete" id={item.id} />
-            </>
-          ))}
+        {(role === "admin" || role === "teacher") && (
+          <>
+            <FormContainer table="exam" type="update" data={item} />
+            <FormContainer table="exam" type="delete" id={item.id} />
+          </>
+        )}
       </div>
     </td>
   </tr>
@@ -193,7 +197,9 @@ const ExamListPage = async ({
             <button className="w-8 h-8 flex items-center justify-center bg-lamaYellow rounded-full">
               <Image src={"/sort.png"} alt={""} height={14} width={14} />
             </button>
-            {role === "admin" && <FormModal table="exam" type="create" />}
+            {(role === "admin" || role === "teacher") && (
+              <FormContainer table="exam" type="create" />
+            )}
           </div>
         </div>
       </div>
